@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pqc": {
+      "type": "stdio",
+      "command": "/Users/scott/post-quantum-mcp/run.sh"
+    }
+  }
+}
