@@ -83,10 +83,29 @@ git clone https://github.com/scottdhughes/quantum-seal.git
 
 The agent handles everything — key generation, encryption, signing, delivery, verification, decryption.
 
+## Quantum Handshake — Zero-Friction Key Bootstrap
+
+The hardest part of encrypted messaging is key exchange. Quantum Seal solves this with an automated handshake protocol:
+
+```
+> Establish secure comms with alice
+```
+
+What happens automatically:
+1. Your identity is generated (if needed) with opaque key handles
+2. Your public identity card is published to a shared discovery directory
+3. Alice's identity card is discovered and validated
+4. A signed challenge-response handshake proves both sides hold their claimed keys
+5. Contacts are imported, fingerprints recorded, trust established
+6. Done — `secure-send` and `secure-receive` just work
+
+**Trust-on-first-use (TOFU):** Like SSH's `known_hosts`. First contact is automatic. If a fingerprint changes later, you get a critical warning — possible impersonation.
+
 ## Skills
 
 | Skill | What It Does |
 |-------|-------------|
+| **quantum-handshake** | Automated first-contact key bootstrap. TOFU key discovery, signed challenge-response, mutual verification. The missing mile between "I have keys" and "we can talk." |
 | **setup-identity** | Generate hybrid encryption + ML-DSA-65 signing keys with opaque handles. Secret keys never enter the conversation. |
 | **key-exchange** | Import/export identity cards, manage contact directory, verify fingerprints out-of-band. |
 | **secure-send** | Encrypt + sign + deliver. Two modes: *agent-readable* (agent composes the message) or *courier* (agent delivers a file without reading it). |
