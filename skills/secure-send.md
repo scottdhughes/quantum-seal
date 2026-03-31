@@ -40,14 +40,15 @@ The message plaintext is read from a file. The agent never sees the content — 
 
 ### Step 3: Seal the message
 
-Call `pqc_hybrid_auth_seal`:
+Call `pqc_hybrid_auth_seal`. The recipient's public keys come from their contact file (not the key store — only your own keys are in the store). Your signing key is referenced by handle.
 
 **Agent-readable mode:**
 ```
 Tool: pqc_hybrid_auth_seal
 Arguments: {
   "plaintext": "<message text>",
-  "recipient_key_store_name": "<recipient-handle>",
+  "recipient_classical_public_key": "<from contact.encryption.classical_public_key>",
+  "recipient_pqc_public_key": "<from contact.encryption.pqc_public_key>",
   "sender_key_store_name": "<your-signing-handle>"
 }
 ```
@@ -57,22 +58,13 @@ Arguments: {
 Tool: pqc_hybrid_auth_seal
 Arguments: {
   "plaintext_base64": "<base64 of file contents>",
-  "recipient_key_store_name": "<recipient-handle>",
-  "sender_key_store_name": "<your-signing-handle>"
-}
-```
-
-Note: `recipient_key_store_name` won't work here because the recipient's keys are in the contact file, not the key store. Instead, pass the raw public keys from the contact file:
-
-```
-Tool: pqc_hybrid_auth_seal
-Arguments: {
-  "plaintext": "<message>",
   "recipient_classical_public_key": "<from contact.encryption.classical_public_key>",
   "recipient_pqc_public_key": "<from contact.encryption.pqc_public_key>",
   "sender_key_store_name": "<your-signing-handle>"
 }
 ```
+
+Note: `recipient_key_store_name` can be used instead of raw public keys if the recipient's keys happen to be in the key store (e.g., after a handshake on the same machine). Otherwise, use the raw public keys from the contact file as shown above.
 
 ### Step 4: Write the envelope
 

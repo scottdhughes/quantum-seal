@@ -79,9 +79,9 @@ This makes your public keys discoverable by other agents on the same machine.
 
 The user will tell you who to establish comms with (e.g., "establish secure comms with alice").
 
-Watch `~/.pqc/discovery/` for `<their-name>.identity.json` to appear. Check every few seconds. If the user specified a file path or pasted an identity card, use that directly instead of waiting.
+Watch `~/.pqc/discovery/` for `<their-name>.identity.json` to appear. Check every 2 seconds for up to 60 seconds. If the user specified a file path or pasted an identity card, use that directly instead of waiting.
 
-If the file doesn't appear within a reasonable time, tell the user: "Waiting for <name>'s identity card to appear in ~/.pqc/discovery/. Ask them to publish their identity or provide their identity card directly."
+If the file doesn't appear within 60 seconds, prompt the user: "No identity card found for <name> in ~/.pqc/discovery/ after 60 seconds. Options: (1) Keep waiting, (2) Provide their identity card directly, (3) Abort."
 
 ### Step 4: Validate the discovered identity card
 
