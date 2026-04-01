@@ -12,7 +12,7 @@
 
 **Quantum Seal** gives AI agents the ability to send and receive quantum-resistant encrypted, sender-authenticated messages. Generate cryptographic identities, exchange keys, seal messages that only the intended recipient can open, and verify who sent them — all with algorithms designed to withstand both classical and quantum attacks.
 
-Secret keys never enter the conversation. Ever.
+Secret keys stay in the MCP server's process memory when using opaque handles.
 
 ## Why
 
@@ -130,7 +130,7 @@ It will: check for your identity (create if needed), check for alice's contact (
 - **Hybrid confidentiality** — both X25519 and ML-KEM-768 must be broken to compromise a message
 - **Sender authentication** — ML-DSA-65 signature over a canonical transcript proves identity
 - **Verify-before-decrypt** — forged signatures fail at authentication, never reach the AEAD layer
-- **Secret key isolation** — opaque handles keep private keys in the MCP server's process memory, never in the AI's context
+- **Secret key isolation** (when using `store_as`) — opaque handles keep private keys in the MCP server's process memory, out of the AI's context
 
 ### Non-Guarantees
 - **Not forward-secret** — recipient key compromise exposes past messages
