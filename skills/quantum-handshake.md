@@ -265,7 +265,7 @@ If you detect a `*-handshake.envelope.json` in your inbox that you didn't initia
 | Property | Status |
 |----------|--------|
 | Mutual key exchange | Yes — both sides exchange public keys |
-| Mutual authentication | Yes — both sides sign handshake messages |
+| Mutual key-possession proof | Yes — both sides sign challenges, proving they hold their private keys |
 | Challenge-response liveness | Yes — proves both sides hold their claimed private keys |
 | Replay protection | Partial — challenges are random, but no expiry enforcement |
 | MITM protection on first contact | No — TOFU. Verify fingerprints out-of-band for full MITM resistance |
