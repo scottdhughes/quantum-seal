@@ -180,7 +180,7 @@ It will: check for your identity (create if needed), check for alice's contact (
 
 ## Related Projects
 
-- **[post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp)** — The cryptographic engine (25 MCP tools)
+- **[post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp)** — The cryptographic engine (23 MCP tools)
 - **[quantum-proof-bitcoin](https://github.com/scottdhughes/quantum-proof-bitcoin)** — Bitcoin with post-quantum signatures
 
 ## License
