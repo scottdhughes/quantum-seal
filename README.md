@@ -145,18 +145,19 @@ It will: check for your identity (create if needed), check for alice's contact (
 ┌─────────────────────────────────────┐
 │         quantum-seal plugin         │
 │                                     │
-│  Skills:     Agent:                 │
-│  - identity  - quantum-messenger    │
+│  Skills:       Agent:               │
+│  - identity    - quantum-messenger  │
 │  - exchange                         │
-│  - send      Filesystem:            │
-│  - receive   ~/.pqc/identities/     │
-│  - inspect   ~/.pqc/contacts/       │
-│  - verify    ~/.pqc/inboxes/        │
+│  - send        Filesystem:          │
+│  - receive     ~/.pqc/identities/   │
+│  - inspect     ~/.pqc/contacts/     │
+│  - verify      ~/.pqc/inboxes/      │
+│  - handshake                        │
 │                                     │
 │  ─ ─ ─ ─ ─ ─ MCP ─ ─ ─ ─ ─ ─ ─   │
 │                                     │
 │  post-quantum-mcp server            │
-│  25 tools | hybrid.py | key_store   │
+│  23 tools | hybrid.py | key_store   │
 │                                     │
 │  ─ ─ ─ ─ ─ ─ FFI ─ ─ ─ ─ ─ ─ ─   │
 │                                     │
