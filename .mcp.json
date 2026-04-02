@@ -2,7 +2,11 @@
   "mcpServers": {
     "pqc": {
       "type": "stdio",
-      "command": "/Users/scott/post-quantum-mcp/run.sh"
+      "command": "bash",
+      "args": ["-c", "\"${PQC_MCP_PATH:-$HOME/post-quantum-mcp}/run.sh\""],
+      "env": {
+        "PQC_MCP_PATH": ""
+      }
     }
   }
 }
