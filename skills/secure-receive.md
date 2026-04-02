@@ -85,5 +85,5 @@ If the sender's fingerprint doesn't match any contact:
 
 - **Verify-before-decrypt:** Signature verification happens before any decryption attempt. A failed signature never reaches the AEAD layer.
 - **Fingerprint trust:** Trusting a fingerprint means trusting that the public key belongs to who you think it does. Import contacts through a trusted channel and verify fingerprints out-of-band for high-security use.
-- **Replay risk:** The current protocol has no built-in replay protection. An attacker could re-deliver a valid envelope. If you see duplicate messages, investigate.
+- **Replay risk:** v2 envelopes include signed timestamps — stale envelopes (>24h) are rejected, and timestamp tampering invalidates the signature. However, there is no stateful dedup yet, so replays within the freshness window are still possible. If you see duplicate messages, investigate.
 - **Handle mode:** Your secret decryption keys are stored as opaque handles. They never appear in this conversation.

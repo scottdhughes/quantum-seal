@@ -18,7 +18,7 @@ A successful verification confirms:
 A successful verification does NOT prove:
 - That you know who the sender is (that requires matching the fingerprint to a trusted contact)
 - That the message content is safe or truthful
-- That this is the first time you've seen this envelope (no replay protection)
+- That this is the first time you've seen this envelope (v2 envelopes include signed timestamps for bounded freshness — stale envelopes are rejected — but there is no stateful dedup yet, so replays within the freshness window are possible)
 
 ## Procedure
 

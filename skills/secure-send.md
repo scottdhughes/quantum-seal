@@ -1,6 +1,6 @@
 ---
 name: secure-send
-description: Send a quantum-resistant encrypted and sender-authenticated message to a contact. Seals the message with hybrid X25519 + ML-KEM-768 encryption and signs it with ML-DSA-65 using opaque key handles. Supports both agent-readable mode (plaintext in conversation) and courier mode (plaintext from file, agent never sees content). Delivers the sealed envelope to the recipient's inbox.
+description: Send a quantum-resistant encrypted and sender-authenticated message to a contact. Seals the message with hybrid X25519 + ML-KEM-768 encryption and signs it with ML-DSA-65 using opaque key handles. Supports both agent-readable mode (plaintext in conversation) and courier mode (plaintext read from file, not composed by agent — note that base64-encoded content still appears in the tool call). Delivers the sealed envelope to the recipient's inbox.
 ---
 
 # Secure Send — Quantum-Resistant Authenticated Messaging
@@ -24,7 +24,7 @@ Check: `~/.pqc/identities/<your-name>.json` and `~/.pqc/contacts/<recipient>.jso
 The message plaintext is passed directly in the tool call. The agent sees the content. Use this when the agent is composing or acting on the message.
 
 ### Courier Mode
-The message plaintext is read from a file. The agent never sees the content — it only orchestrates encryption and delivery. Use this when the user says something like "encrypt the file at /path/to/message.txt" or "send this file securely."
+The message plaintext is read from a file rather than composed by the agent. Note: the base64-encoded content still appears in the tool call, so the agent handles it as opaque bytes but does not have true content-blindness. Use this when the user says something like "encrypt the file at /path/to/message.txt" or "send this file securely."
 
 ## Procedure
 
