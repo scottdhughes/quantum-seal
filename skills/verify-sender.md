@@ -1,6 +1,6 @@
 ---
 name: verify-sender
-description: Verify the sender identity and signature integrity of an authenticated envelope without decrypting it. Confirms the ML-DSA-65 signature over the canonical transcript is valid and that the sender's fingerprint matches a known contact. This is a verification-only operation — no secret keys are used, no plaintext is revealed.
+description: Verify the sender identity and signature integrity of an authenticated envelope without decrypting it. Uses pqc_hybrid_auth_verify to validate the ML-DSA-65 signature, sender binding, fingerprint consistency, and timestamp freshness in a single call. This is a verification-only operation — no secret keys are used, no plaintext is revealed.
 ---
 
 # Verify Sender — Signature Verification Without Decryption
@@ -14,11 +14,12 @@ A successful verification confirms:
 2. The signer holds the private key corresponding to the embedded sender public key
 3. The sender's embedded fingerprint is consistent with their embedded public key (not forged)
 4. No field in the envelope has been tampered with (signature covers version, suite, all ciphertexts, sender identity, and recipient fingerprints)
+5. For v2 envelopes: the signed timestamp is within the freshness window (stale envelopes are rejected)
 
 A successful verification does NOT prove:
 - That you know who the sender is (that requires matching the fingerprint to a trusted contact)
 - That the message content is safe or truthful
-- That this is the first time you've seen this envelope (v2 envelopes include signed timestamps for bounded freshness — stale envelopes are rejected — but there is no stateful dedup yet, so replays within the freshness window are possible)
+- That this is the first time you've seen this envelope (v2 envelopes include signed timestamps, and `pqc_hybrid_auth_verify` rejects stale envelopes outside the freshness window — but there is no stateful dedup yet, so replays within the freshness window are still possible)
 
 ## Procedure
 
@@ -54,20 +55,31 @@ Search `~/.pqc/contacts/` for a contact whose `signing.fingerprint` matches `env
 
 ### Step 4: Verify the signature
 
-To verify the actual ML-DSA-65 signature without decrypting, reconstruct the canonical transcript and verify. Currently, `pqc_hybrid_auth_open` does this internally (verify before decrypt). For verification-only, you can call `pqc_hybrid_auth_open` with intentionally wrong recipient keys — it will either fail at sender verification (meaning the signature is bad) or fail at decryption (meaning the signature passed but you used wrong keys).
-
-A cleaner approach: use the raw `pqc_verify` tool:
+Call `pqc_hybrid_auth_verify` with the envelope and the expected sender's fingerprint from Step 3:
 ```
-Tool: pqc_verify
+Tool: pqc_hybrid_auth_verify
 Arguments: {
-  "algorithm": "ML-DSA-65",
-  "public_key": "<envelope.sender_public_key>",
-  "message": "<reconstructed canonical transcript as base64>",
-  "signature": "<envelope.signature>"
+  "envelope": <envelope JSON>,
+  "expected_sender_fingerprint": "<fingerprint from contact file>"
 }
 ```
 
-However, reconstructing the canonical transcript externally requires knowledge of the length-prefixed binary format. This is an advanced operation. For most use cases, rely on `pqc_hybrid_auth_open` which performs verification internally before decryption.
+Note: you must provide either `expected_sender_fingerprint` or `expected_sender_public_key`. The tool will not verify without a sender binding — this prevents accepting envelopes from arbitrary signers.
+
+This tool performs all verification checks:
+- Validates that the sender's fingerprint matches the embedded public key
+- Verifies the ML-DSA-65 signature over the canonical transcript
+- Checks timestamp freshness for v2 envelopes (rejects stale signatures)
+
+On success, the tool returns:
+- `verified` — always `true` (the tool raises an exception on failure)
+- `sender_key_fingerprint` — the fingerprint of the signing key
+- `sender_signature_algorithm` — the signature algorithm used (e.g., `ML-DSA-65`)
+- `timestamp` — the signed timestamp (v2 envelopes)
+- `replay_seen` — advisory flag if this exact envelope has been seen before in the current session
+- `warning` — present only for v1 envelopes, warns about missing freshness protection
+
+On failure, the tool raises `SenderVerificationError` (wrong sender, bad signature, inconsistent fingerprint) or `ValueError` (bad version, missing fields, stale timestamp). Catch the error and report it — do not trust the envelope.
 
 ### Step 5: Report
 
@@ -77,6 +89,8 @@ Sender Verification Report:
   Fingerprint consistent with embedded public key: Yes
   Contact match:         alice (verified)
   Signature algorithm:   ML-DSA-65 (FIPS 204, NIST Level 3)
+  Timestamp:             2026-04-01T12:34:56Z
+  Replay advisory:       No
 
   Verdict: Authentic. This envelope was signed by alice's ML-DSA-65
   key and has not been tampered with.
@@ -101,4 +115,6 @@ Sender Verification Report:
 - Verification uses only the sender's **public key**, which is embedded in the envelope. No secret keys are needed.
 - The canonical transcript includes all envelope fields, so any tampering invalidates the signature.
 - Fingerprint consistency checking catches a specific attack: an adversary who replaces the sender_public_key but forgets to update the fingerprint (or vice versa).
+- `pqc_hybrid_auth_verify` checks fingerprint consistency internally, but Step 2 is retained as defense-in-depth so you can surface a clear warning before the full verification call.
+- For v2 envelopes, the signed timestamp provides bounded freshness — but replay detection within the freshness window requires stateful tracking, which is not yet implemented.
 - This skill does not decrypt the message. It answers one question: "Did the claimed sender actually sign this envelope?"
