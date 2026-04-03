@@ -108,10 +108,10 @@ What happens automatically:
 | **quantum-handshake** | Automated first-contact key bootstrap. TOFU key discovery, signed challenge-response, mutual verification. The missing mile between "I have keys" and "we can talk." |
 | **setup-identity** | Generate hybrid encryption + ML-DSA-65 signing keys with opaque handles. Secret keys never enter the conversation. |
 | **key-exchange** | Import/export identity cards, manage contact directory, verify fingerprints out-of-band. |
-| **secure-send** | Encrypt + sign + deliver. Two modes: *agent-readable* (agent composes the message) or *courier* (agent delivers a file without reading it). |
+| **secure-send** | Encrypt + sign + deliver. Two modes: *agent-readable* (agent composes the message) or *courier* (agent reads from file — base64 content still in tool call). |
 | **secure-receive** | Verify sender signature BEFORE decryption. Report authentication status + content. Archive processed messages. |
 | **inspect-envelope** | Forensic metadata — sender, sizes, fingerprints, authentication — without any secret keys. |
-| **verify-sender** | Confirm the ML-DSA-65 signature is valid and the sender matches a known contact. No decryption. |
+| **verify-sender** | Verify sender signature using pqc_hybrid_auth_verify — checks ML-DSA-65 signature, fingerprint consistency, and timestamp freshness in one call. No decryption needed. |
 
 ## Agent
 
@@ -134,10 +134,23 @@ It will: check for your identity (create if needed), check for alice's contact (
 
 ### Non-Guarantees
 - **Not forward-secret** — recipient key compromise exposes past messages
-- **No replay protection** — valid envelopes can be re-delivered
+- **Bounded replay protection** — v2 envelopes include signed timestamps; stale envelopes (>24h) are rejected. Stateful dedup available at the handler layer. No protection for v1 envelopes.
 - **Not mutually authenticated** — sender proves identity to recipient, not vice versa
-- **Agent sees plaintext** in agent-readable mode (use courier mode for content privacy from the AI)
+- **Agent sees plaintext** in agent-readable mode. Courier mode reads from file but base64 content still appears in tool calls — not true content-blindness.
 - **Not production-grade** — liboqs is research/prototyping software
+
+### Content Safety
+- Decrypted messages are treated as **untrusted input**, even from verified senders
+- The agent will never execute commands from messages without user approval
+- Suspicious patterns (shell commands, tool-call JSON, encoded payloads) trigger warnings
+- A verified sender does NOT mean safe content — a contact's keys could be compromised
+
+### Security Features (v2 Protocol)
+- **Signed timestamps** — v2 envelopes bind freshness to the ML-DSA-65 signature
+- **Replay detection** — signature-digest cache rejects duplicate envelopes
+- **Envelope validation** — size limits prevent memory bombs; malformed fields rejected before crypto
+- **Handle-only mode** — PQC_REQUIRE_KEY_HANDLES=1 enforces opaque handles for hybrid envelope operations
+- **Verify-before-decrypt** — authentication failure never reaches the AEAD layer
 
 ## Architecture
 
@@ -157,7 +170,7 @@ It will: check for your identity (create if needed), check for alice's contact (
 │  ─ ─ ─ ─ ─ ─ MCP ─ ─ ─ ─ ─ ─ ─   │
 │                                     │
 │  post-quantum-mcp server            │
-│  23 tools | hybrid.py | key_store   │
+│  24 tools | hybrid.py | key_store   │
 │                                     │
 │  ─ ─ ─ ─ ─ ─ FFI ─ ─ ─ ─ ─ ─ ─   │
 │                                     │
@@ -180,7 +193,7 @@ It will: check for your identity (create if needed), check for alice's contact (
 
 ## Related Projects
 
-- **[post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp)** — The cryptographic engine (23 MCP tools)
+- **[post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp)** — The cryptographic engine (24 MCP tools)
 - **[quantum-proof-bitcoin](https://github.com/scottdhughes/quantum-proof-bitcoin)** — Bitcoin with post-quantum signatures
 
 ## License

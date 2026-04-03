@@ -1,6 +1,6 @@
 {
   "name": "quantum-seal",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Post-quantum encrypted messaging for AI agents. Quantum-resistant identity, authenticated sealed envelopes, and secure agent-to-agent communication powered by hybrid X25519 + ML-KEM-768 key exchange and ML-DSA-65 signatures.",
   "author": {
     "name": "Scott Hughes",
