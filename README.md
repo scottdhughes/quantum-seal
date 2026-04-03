@@ -165,7 +165,7 @@ It will: check for your identity (create if needed), check for alice's contact (
 │  - receive     ~/.pqc/identities/   │
 │  - inspect     ~/.pqc/contacts/     │
 │  - verify      ~/.pqc/inboxes/      │
-│  - handshake                        │
+│  - handshake   ~/.pqc/state/        │
 │                                     │
 │  ─ ─ ─ ─ ─ ─ MCP ─ ─ ─ ─ ─ ─ ─   │
 │                                     │
@@ -184,11 +184,14 @@ It will: check for your identity (create if needed), check for alice's contact (
 
 ```
 ~/.pqc/
-  identities/     # Your identity cards (public + handle refs)
+  identities/     # Public identity cards + local state files
   contacts/       # Imported contact identity cards
   inboxes/        # Incoming sealed envelopes
   outbox/         # Outgoing sealed envelopes
   archive/        # Processed messages
+  discovery/      # Published identity cards for handshake
+  handshakes/     # Pending handshake state
+  state/          # Persistent replay cache
 ```
 
 ## Related Projects

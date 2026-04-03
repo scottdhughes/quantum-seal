@@ -19,7 +19,7 @@ A successful verification confirms:
 A successful verification does NOT prove:
 - That you know who the sender is (that requires matching the fingerprint to a trusted contact)
 - That the message content is safe or truthful
-- That this is the first time you've seen this envelope (v2 envelopes include signed timestamps, and `pqc_hybrid_auth_verify` rejects stale envelopes outside the freshness window — but there is no stateful dedup yet, so replays within the freshness window are still possible)
+- That this is the first time you've seen this envelope (the replay cache persists to `~/.pqc/state/replay-cache.json`; `pqc_hybrid_auth_verify` reports `replay_seen` as an advisory flag but does not reject duplicates — use `pqc_hybrid_auth_open` for full replay rejection of previously-opened envelopes)
 
 ## Procedure
 
@@ -76,7 +76,7 @@ On success, the tool returns:
 - `sender_key_fingerprint` — the fingerprint of the signing key
 - `sender_signature_algorithm` — the signature algorithm used (e.g., `ML-DSA-65`)
 - `timestamp` — the signed timestamp (v2 envelopes)
-- `replay_seen` — advisory flag if this exact envelope has been seen before in the current session
+- `replay_seen` — advisory flag if this exact envelope has been seen before (checked against the persistent replay cache at `~/.pqc/state/replay-cache.json`)
 - `warning` — present only for v1 envelopes, warns about missing freshness protection
 
 On failure, the tool raises `SenderVerificationError` (wrong sender, bad signature, inconsistent fingerprint) or `ValueError` (bad version, missing fields, stale timestamp). Catch the error and report it — do not trust the envelope.
@@ -116,5 +116,5 @@ Sender Verification Report:
 - The canonical transcript includes all envelope fields, so any tampering invalidates the signature.
 - Fingerprint consistency checking catches a specific attack: an adversary who replaces the sender_public_key but forgets to update the fingerprint (or vice versa).
 - `pqc_hybrid_auth_verify` checks fingerprint consistency internally, but Step 2 is retained as defense-in-depth so you can surface a clear warning before the full verification call.
-- For v2 envelopes, the signed timestamp provides bounded freshness — but replay detection within the freshness window requires stateful tracking, which is not yet implemented.
+- For v2/v3 envelopes, signed timestamps provide bounded freshness. The replay cache persists to `~/.pqc/state/replay-cache.json` and provides bounded dedup. `pqc_hybrid_auth_verify` reports `replay_seen` as an advisory flag; `pqc_hybrid_auth_open` rejects previously-opened envelopes.
 - This skill does not decrypt the message. It answers one question: "Did the claimed sender actually sign this envelope?"

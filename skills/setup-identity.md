@@ -62,7 +62,7 @@ Again, no secret key in the response.
 
 ### Step 4: Write identity card to disk
 
-Create the directory `~/.pqc/identities/` if it doesn't exist. Write a JSON identity card:
+Create the directory `~/.pqc/identities/` if it doesn't exist. Write a JSON identity card containing **only public material** -- this file is safe to share with anyone:
 
 ```json
 {
@@ -81,15 +81,31 @@ Create the directory `~/.pqc/identities/` if it doesn't exist. Write a JSON iden
     "fingerprint": "<hex from step 3>",
     "fingerprint_algorithm": "SHA3-256"
   },
-  "handles": {
-    "encryption": "<identity-name>",
-    "signing": "<identity-name>-signing"
-  },
   "warning": "Research/prototyping only. liboqs is not recommended for production use."
 }
 ```
 
 Save to `~/.pqc/identities/<identity-name>.json`.
+
+The identity card contains only public material and is safe to share. Handle names are stored separately in a local state file (see Step 4b).
+
+### Step 4b: Write local state file
+
+Save handle names to a separate local state file so they can be reloaded when needed. This file stays on your machine and is **not** shared:
+
+```json
+{
+  "name": "<identity-name>",
+  "handles": {
+    "encryption": "<identity-name>",
+    "signing": "<identity-name>-signing"
+  },
+  "created": "<ISO-8601>",
+  "session_note": "Handles are process-local — lost on MCP server restart."
+}
+```
+
+Save to `~/.pqc/identities/<identity-name>.local.json`.
 
 ### Step 5: Confirm to the user
 
