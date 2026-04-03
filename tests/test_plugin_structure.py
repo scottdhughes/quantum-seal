@@ -1,10 +1,8 @@
 """Tests for plugin.json validity and file reference integrity."""
 
-import json
 import pathlib
 import re
 
-import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 

@@ -48,9 +48,7 @@ def test_gitignore_exists():
 
 def test_no_orphan_skill_files():
     """Every .md in skills/ should be referenced in plugin.json."""
-    plugin = json.loads(
-        (REPO_ROOT / ".claude-plugin" / "plugin.json").read_text()
-    )
+    plugin = json.loads((REPO_ROOT / ".claude-plugin" / "plugin.json").read_text())
     registered = {pathlib.Path(p).name for p in plugin["skills"]}
     actual = {p.name for p in (REPO_ROOT / "skills").glob("*.md")}
     orphans = actual - registered
@@ -59,9 +57,7 @@ def test_no_orphan_skill_files():
 
 def test_no_orphan_agent_files():
     """Every .md in agents/ should be referenced in plugin.json."""
-    plugin = json.loads(
-        (REPO_ROOT / ".claude-plugin" / "plugin.json").read_text()
-    )
+    plugin = json.loads((REPO_ROOT / ".claude-plugin" / "plugin.json").read_text())
     registered = {pathlib.Path(p).name for p in plugin["agents"]}
     actual = {p.name for p in (REPO_ROOT / "agents").glob("*.md")}
     orphans = actual - registered
