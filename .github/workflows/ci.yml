@@ -6,8 +6,27 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  LIBOQS_VERSION: "0.14.0"
+  LIBOQS_PYTHON_VERSION: "0.14.1"
+  ENGINE_REF: "v0.7.0"
+
 jobs:
-  test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ruff
+        run: pip install ruff
+      - name: Check formatting and lint
+        run: |
+          ruff check tests/
+          ruff format --check tests/
+
+  structural-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,5 +35,51 @@ jobs:
           python-version: "3.12"
       - name: Install pytest
         run: pip install pytest
-      - name: Run tests
+      - name: Run structural tests (no liboqs needed)
+        run: python -m pytest tests/test_plugin_structure.py tests/test_skill_frontmatter.py tests/test_consistency.py -v
+
+  behavioral-integration:
+    runs-on: ubuntu-latest
+    env:
+      VENDOR_PREFIX: /tmp/liboqs-vendor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+
+      - name: Build project-local liboqs
+        run: |
+          git clone --depth 1 --branch "$LIBOQS_VERSION" https://github.com/open-quantum-safe/liboqs.git /tmp/liboqs-src
+          cmake -S /tmp/liboqs-src -B /tmp/liboqs-build \
+            -GNinja \
+            -DBUILD_SHARED_LIBS=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$VENDOR_PREFIX"
+          ninja -C /tmp/liboqs-build
+          ninja -C /tmp/liboqs-build install
+          sudo ldconfig
+
+      - name: Install post-quantum-mcp engine
+        run: pip install "git+https://github.com/scottdhughes/post-quantum-mcp.git@${ENGINE_REF}"
+        env:
+          LD_LIBRARY_PATH: /tmp/liboqs-vendor/lib
+
+      - name: Install test dependencies
+        run: pip install pytest hypothesis "liboqs-python==${LIBOQS_PYTHON_VERSION}"
+
+      - name: Run behavioral integration tests
+        run: python -m pytest tests/test_behavioral_mcp.py -v
+        env:
+          LD_LIBRARY_PATH: /tmp/liboqs-vendor/lib
+          OQS_INSTALL_PATH: /tmp/liboqs-vendor
+
+      - name: Run all tests
         run: python -m pytest tests/ -v
+        env:
+          LD_LIBRARY_PATH: /tmp/liboqs-vendor/lib
+          OQS_INSTALL_PATH: /tmp/liboqs-vendor
