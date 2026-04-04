@@ -44,9 +44,7 @@ def clean_key_store():
 def sender_identity():
     """Generate sender hybrid + signing keys via handles."""
     enc = handle_hybrid_keygen({"store_as": "test-sender"})
-    sig = handle_generate_keypair(
-        {"algorithm": "ML-DSA-65", "store_as": "test-sender-signing"}
-    )
+    sig = handle_generate_keypair({"algorithm": "ML-DSA-65", "store_as": "test-sender-signing"})
     return {"encryption": enc, "signing": sig}
 
 
@@ -65,9 +63,7 @@ class TestFullMessageFlow:
         result = handle_hybrid_auth_seal(
             {
                 "plaintext": "Hello from behavioral test!",
-                "recipient_classical_public_key": recipient_identity["classical"][
-                    "public_key"
-                ],
+                "recipient_classical_public_key": recipient_identity["classical"]["public_key"],
                 "recipient_pqc_public_key": recipient_identity["pqc"]["public_key"],
                 "sender_key_store_name": "test-sender-signing",
             }
@@ -81,9 +77,7 @@ class TestFullMessageFlow:
         verify_result = handle_hybrid_auth_verify(
             {
                 "envelope": envelope,
-                "expected_sender_fingerprint": sender_identity["signing"][
-                    "fingerprint"
-                ],
+                "expected_sender_fingerprint": sender_identity["signing"]["fingerprint"],
             }
         )
         assert verify_result["verified"] is True
@@ -94,9 +88,7 @@ class TestFullMessageFlow:
             {
                 "envelope": envelope,
                 "key_store_name": "test-recipient",
-                "expected_sender_fingerprint": sender_identity["signing"][
-                    "fingerprint"
-                ],
+                "expected_sender_fingerprint": sender_identity["signing"]["fingerprint"],
             }
         )
         assert open_result["plaintext"] == "Hello from behavioral test!"
@@ -112,9 +104,7 @@ class TestFullMessageFlow:
         result = handle_hybrid_auth_seal(
             {
                 "plaintext": "secret",
-                "recipient_classical_public_key": recipient_identity["classical"][
-                    "public_key"
-                ],
+                "recipient_classical_public_key": recipient_identity["classical"]["public_key"],
                 "recipient_pqc_public_key": recipient_identity["pqc"]["public_key"],
                 "sender_key_store_name": "test-sender-signing",
             }
@@ -125,22 +115,16 @@ class TestFullMessageFlow:
                 {
                     "envelope": result["envelope"],
                     "key_store_name": "test-other",
-                    "expected_sender_fingerprint": sender_identity["signing"][
-                        "fingerprint"
-                    ],
+                    "expected_sender_fingerprint": sender_identity["signing"]["fingerprint"],
                 }
             )
 
-    def test_wrong_sender_fingerprint_rejected(
-        self, sender_identity, recipient_identity
-    ):
+    def test_wrong_sender_fingerprint_rejected(self, sender_identity, recipient_identity):
         """Wrong expected sender must fail at verification."""
         result = handle_hybrid_auth_seal(
             {
                 "plaintext": "data",
-                "recipient_classical_public_key": recipient_identity["classical"][
-                    "public_key"
-                ],
+                "recipient_classical_public_key": recipient_identity["classical"]["public_key"],
                 "recipient_pqc_public_key": recipient_identity["pqc"]["public_key"],
                 "sender_key_store_name": "test-sender-signing",
             }
@@ -174,9 +158,7 @@ class TestVerifyRejectsInvalid:
         result = handle_hybrid_auth_seal(
             {
                 "plaintext": "data",
-                "recipient_classical_public_key": recipient_identity["classical"][
-                    "public_key"
-                ],
+                "recipient_classical_public_key": recipient_identity["classical"]["public_key"],
                 "recipient_pqc_public_key": recipient_identity["pqc"]["public_key"],
                 "sender_key_store_name": "test-sender-signing",
             }
@@ -269,9 +251,7 @@ class TestSecurityPolicy:
         policy = SecurityPolicy()
         policy.require_key_handles = True
         with pytest.raises(ValueError, match="rejected by server policy"):
-            policy.check_no_raw_secrets(
-                {"classical_secret_key": "abc"}, ["classical_secret_key"]
-            )
+            policy.check_no_raw_secrets({"classical_secret_key": "abc"}, ["classical_secret_key"])
 
     def test_policy_allows_handle_when_enabled(self):
         policy = SecurityPolicy()
