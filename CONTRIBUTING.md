@@ -6,23 +6,55 @@ Thank you for your interest in contributing!
 
 Quantum Seal is a Claude Code plugin. All cryptographic operations are handled by the [post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp) MCP server — this repo contains only skills (markdown procedures), an autonomous agent, and plugin configuration.
 
+## Compatibility Matrix
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| **post-quantum-mcp** | v0.8.0 | Engine tag pinned in CI |
+| **liboqs** (C library) | 0.14.0 | Must match liboqs-python |
+| **liboqs-python** | 0.14.1 | PyPI package |
+| **Python** | 3.12 | CI-tested |
+
 ## Development
 
 ### Prerequisites
 
-- Python 3.10+ (for running tests)
+- Python 3.10+
 - pytest (`pip install pytest`)
+- ruff (`pip install ruff`) — for lint/format checks
 
-### Running Tests
+### Test Tiers
 
+**1. Structural tests (no dependencies needed):**
 ```bash
-python -m pytest tests/ -v
+python -m pytest tests/test_plugin_structure.py tests/test_skill_frontmatter.py tests/test_consistency.py -v
+```
+Validates plugin structure, skill frontmatter, and cross-reference consistency.
+
+**2. Behavioral integration tests (requires liboqs + engine):**
+```bash
+pip install liboqs-python==0.14.1 hypothesis
+pip install git+https://github.com/scottdhughes/post-quantum-mcp.git@v0.8.0
+LD_LIBRARY_PATH=/path/to/liboqs/lib python -m pytest tests/test_behavioral_mcp.py -v
+```
+Exercises full crypto flows: keygen → seal → verify → open, replay cache, key-handle policy.
+**Skipped automatically if liboqs is not installed.**
+
+**3. Lint and formatting:**
+```bash
+ruff check tests/
+ruff format --check tests/
 ```
 
-Tests validate:
-- Plugin structure (plugin.json schema, file references)
-- Skill/agent frontmatter (required fields, description quality)
-- Cross-reference consistency (README ↔ skills, no orphan files)
+### Understanding test results
+
+| Result | Meaning |
+|--------|---------|
+| All passing | Full confidence |
+| Behavioral skipped | liboqs not installed — structural only (degraded confidence) |
+| Lint not run | ruff not installed — formatting not verified |
+
+CI always runs all three tiers. Local runs may skip behavioral tests if liboqs is absent.
 
 ### Adding a Skill
 

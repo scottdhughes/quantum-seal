@@ -61,7 +61,7 @@ Alice                                    Bob
 
 - [Claude Code](https://claude.ai/code) (or any MCP-compatible AI agent)
 - [post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp) server installed
-- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.15.0
+- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.14.0 (must match liboqs-python 0.14.1)
 
 ### Install
 
