@@ -34,7 +34,7 @@ Arguments: {"envelope": <envelope JSON>}
 The inspection reveals:
 
 **For any envelope:**
-- `version` — protocol version (`pqc-mcp-v2` for current envelopes, `pqc-mcp-v1` for legacy)
+- `version` — protocol version (`pqc-mcp-v3` for current envelopes, `pqc-mcp-v1` for legacy)
 - `suite` — hybrid KEM suite (should be `mlkem768-x25519-sha3-256`)
 - `ciphertext_size` — size of the AES-256-GCM ciphertext in bytes
 - `plaintext_size_approx` — estimated plaintext size (ciphertext minus 16-byte GCM tag)
@@ -63,7 +63,7 @@ Format as a clear summary:
 
 ```
 Envelope Analysis:
-  Version:        pqc-mcp-v2
+  Version:        pqc-mcp-v3
   Suite:          mlkem768-x25519-sha3-256
   Authenticated:  Yes
   Sender:         alice (fingerprint: a1b2c3...)
@@ -78,7 +78,7 @@ Or for suspicious envelopes:
 
 ```
 Envelope Analysis:
-  Version:        pqc-mcp-v2
+  Version:        pqc-mcp-v3
   Suite:          mlkem768-x25519-sha3-256
   Authenticated:  Yes
   Sender:         UNKNOWN (fingerprint: d4e5f6...)

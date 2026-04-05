@@ -14,7 +14,7 @@ A successful verification confirms:
 2. The signer holds the private key corresponding to the embedded sender public key
 3. The sender's embedded fingerprint is consistent with their embedded public key (not forged)
 4. No field in the envelope has been tampered with (signature covers version, suite, all ciphertexts, sender identity, and recipient fingerprints)
-5. For v2 envelopes: the signed timestamp is within the freshness window (stale envelopes are rejected)
+5. For v2/v3 envelopes: the signed timestamp is within the freshness window (stale envelopes are rejected)
 
 A successful verification does NOT prove:
 - That you know who the sender is (that requires matching the fingerprint to a trusted contact)
@@ -69,13 +69,13 @@ Note: you must provide either `expected_sender_fingerprint` or `expected_sender_
 This tool performs all verification checks:
 - Validates that the sender's fingerprint matches the embedded public key
 - Verifies the ML-DSA-65 signature over the canonical transcript
-- Checks timestamp freshness for v2 envelopes (rejects stale signatures)
+- Checks timestamp freshness for v2/v3 envelopes (rejects stale signatures)
 
 On success, the tool returns:
 - `verified` — always `true` (the tool raises an exception on failure)
 - `sender_key_fingerprint` — the fingerprint of the signing key
 - `sender_signature_algorithm` — the signature algorithm used (e.g., `ML-DSA-65`)
-- `timestamp` — the signed timestamp (v2 envelopes)
+- `timestamp` — the signed timestamp (v2/v3 envelopes)
 - `replay_seen` — advisory flag if this exact envelope has been seen before (checked against the persistent replay cache at `~/.pqc/state/replay-cache.json`)
 - `warning` — present only for v1 envelopes, warns about missing freshness protection
 
