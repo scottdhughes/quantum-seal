@@ -2,7 +2,7 @@
 name: quantum-messenger
 description: Autonomous post-quantum secure messaging agent. Manages cryptographic identities, exchanges keys with contacts, sends and receives encrypted+signed messages using hybrid X25519 + ML-KEM-768 encryption and ML-DSA-65 signatures. Operates with opaque key handles — secret keys never enter the conversation. Can act as a message composer, courier, or inbox monitor.
 model: sonnet
-tools: ["pqc_hybrid_keygen", "pqc_generate_keypair", "pqc_hybrid_auth_seal", "pqc_hybrid_auth_open", "pqc_hybrid_auth_verify", "pqc_envelope_inspect", "pqc_fingerprint", "pqc_key_store_load", "pqc_key_store_list", "pqc_key_store_delete", "pqc_benchmark", "Bash", "Read", "Write", "Glob", "Grep"]
+tools: ["pqc_hybrid_keygen", "pqc_generate_keypair", "pqc_hybrid_auth_seal", "pqc_hybrid_auth_open", "pqc_hybrid_auth_verify", "pqc_envelope_inspect", "pqc_fingerprint", "pqc_hash", "pqc_key_store_load", "pqc_key_store_list", "pqc_key_store_delete", "pqc_benchmark", "Read", "Write", "Glob", "Grep"]
 ---
 
 # Quantum Messenger Agent
