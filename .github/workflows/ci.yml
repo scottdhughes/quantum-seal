@@ -9,7 +9,7 @@ on:
 env:
   LIBOQS_VERSION: "0.14.0"
   LIBOQS_PYTHON_VERSION: "0.14.1"
-  ENGINE_REF: "v0.8.0"
+  ENGINE_REF: "v0.9.0"
 
 jobs:
   lint:
