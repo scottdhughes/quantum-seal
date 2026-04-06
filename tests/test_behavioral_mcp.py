@@ -57,7 +57,8 @@ def recipient_identity():
 class TestFullMessageFlow:
     """End-to-end: keygen → auth_seal → auth_verify → auth_open."""
 
-    def test_keygen_seal_verify_open(self, sender_identity, recipient_identity):
+    @pytest.mark.asyncio
+    async def test_keygen_seal_verify_open(self, sender_identity, recipient_identity):
         """Full happy path using handles."""
         # Seal
         result = handle_hybrid_auth_seal(
@@ -84,7 +85,7 @@ class TestFullMessageFlow:
         assert verify_result["replay_seen"] is False
 
         # Open (requires recipient secret keys)
-        open_result = handle_hybrid_auth_open(
+        open_result = await handle_hybrid_auth_open(
             {
                 "envelope": envelope,
                 "key_store_name": "test-recipient",
@@ -94,7 +95,8 @@ class TestFullMessageFlow:
         assert open_result["plaintext"] == "Hello from behavioral test!"
         assert open_result["authenticated"] is True
 
-    def test_wrong_recipient_cannot_open(self, sender_identity, recipient_identity):
+    @pytest.mark.asyncio
+    async def test_wrong_recipient_cannot_open(self, sender_identity, recipient_identity):
         """Wrong recipient keys must fail at decryption."""
         from cryptography.exceptions import InvalidTag
 
@@ -111,7 +113,7 @@ class TestFullMessageFlow:
         )
 
         with pytest.raises(InvalidTag):
-            handle_hybrid_auth_open(
+            await handle_hybrid_auth_open(
                 {
                     "envelope": result["envelope"],
                     "key_store_name": "test-other",
