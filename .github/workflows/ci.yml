@@ -70,7 +70,7 @@ jobs:
           LD_LIBRARY_PATH: /tmp/liboqs-vendor/lib
 
       - name: Install test dependencies
-        run: pip install pytest hypothesis "liboqs-python==${LIBOQS_PYTHON_VERSION}"
+        run: pip install pytest pytest-asyncio hypothesis "liboqs-python==${LIBOQS_PYTHON_VERSION}"
 
       - name: Run behavioral integration tests
         run: python -m pytest tests/test_behavioral_mcp.py -v
