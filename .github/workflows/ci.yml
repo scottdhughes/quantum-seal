@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install pytest
-        run: pip install pytest
+        run: pip install pytest pytest-asyncio
       - name: Run structural tests (no liboqs needed)
         run: python -m pytest tests/test_plugin_structure.py tests/test_skill_frontmatter.py tests/test_consistency.py -v
 

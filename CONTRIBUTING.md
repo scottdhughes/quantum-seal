@@ -10,9 +10,10 @@ Quantum Seal is a Claude Code plugin. All cryptographic operations are handled b
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| **post-quantum-mcp** | v0.8.0 | Engine tag pinned in CI |
+| **post-quantum-mcp** | v0.9.0 | Engine tag pinned in CI |
 | **liboqs** (C library) | 0.14.0 | Must match liboqs-python |
 | **liboqs-python** | 0.14.1 | PyPI package |
+| **pytest-asyncio** | latest | Required for async behavioral tests |
 | **Python** | 3.12 | CI-tested |
 
 ## Development
@@ -33,8 +34,8 @@ Validates plugin structure, skill frontmatter, and cross-reference consistency.
 
 **2. Behavioral integration tests (requires liboqs + engine):**
 ```bash
-pip install liboqs-python==0.14.1 hypothesis
-pip install git+https://github.com/scottdhughes/post-quantum-mcp.git@v0.8.0
+pip install liboqs-python==0.14.1 hypothesis pytest-asyncio
+pip install git+https://github.com/scottdhughes/post-quantum-mcp.git@v0.9.0
 LD_LIBRARY_PATH=/path/to/liboqs/lib python -m pytest tests/test_behavioral_mcp.py -v
 ```
 Exercises full crypto flows: keygen → seal → verify → open, replay cache, key-handle policy.
