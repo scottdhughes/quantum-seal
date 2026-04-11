@@ -18,6 +18,20 @@ Quantum Seal is a Claude Code plugin. All cryptographic operations are handled b
 
 ## Development
 
+### Quick start
+
+One command runs lint, all tests, and prints whether the crypto path was actually exercised:
+
+```bash
+./scripts/verify.sh
+```
+
+On first run, the script auto-creates `./.venv/` (already gitignored) seeded from `python3` and installs `pytest`, `pytest-asyncio`, and `ruff` into it. If you have a venv already active (`$VIRTUAL_ENV` set), it uses that instead. To seed from a specific interpreter: `PYTHON=/path/to/python3.12 ./scripts/verify.sh`.
+
+It then runs CI-equivalent lint and structural checks locally, plus behavioral tests when `liboqs-python` and `cryptography` are both importable. It does **not** build liboqs from source — see "Behavioral integration tests" below for the full setup CI uses. **Exits non-zero** if either dependency is absent (behavioral tests would skip) so degraded coverage cannot masquerade as a clean run. Override with `ALLOW_DEGRADED=1 ./scripts/verify.sh` for pure-markdown changes where you accept structural-only confidence.
+
+Exit codes: `0` clean, `1` lint or test failure, `2` dependency install failure, `3` degraded coverage (no liboqs).
+
 ### Prerequisites
 
 - Python 3.10+
