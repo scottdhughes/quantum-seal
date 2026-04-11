@@ -61,7 +61,7 @@ Alice                                    Bob
 
 - [Claude Code](https://claude.ai/code) (or any MCP-compatible AI agent)
 - [post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp) checked out at `~/post-quantum-mcp` (override with the `PQC_MCP_PATH` env var). The engine's git-tag must match [`.engine-pin`](.engine-pin).
-- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.14.0, vendored at `~/post-quantum-mcp/.vendor/liboqs-0.14/` or installed system-wide. Must match `liboqs-python==0.14.1`.
+- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.15.0, vendored at `~/post-quantum-mcp/.vendor/liboqs-0.15/` or installed system-wide. Used with `liboqs-python==0.14.1` (no 0.15.x binding shipped yet — emits a documented cosmetic `UserWarning` at load).
 
 ### Install
 

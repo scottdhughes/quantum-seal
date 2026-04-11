@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  LIBOQS_VERSION: "0.14.0"
+  LIBOQS_VERSION: "0.15.0"
   LIBOQS_PYTHON_VERSION: "0.14.1"
   # ENGINE_REF is read from .engine-pin (single source of truth, also
   # consumed by scripts/launch-engine.sh) and exported per-job below.

@@ -11,8 +11,8 @@ Quantum Seal is a Claude Code plugin. All cryptographic operations are handled b
 | Component | Version | Notes |
 |-----------|---------|-------|
 | **post-quantum-mcp** | see [`.engine-pin`](.engine-pin) | Single source of truth — read by CI and `scripts/launch-engine.sh`. Update this file to bump the engine. |
-| **liboqs** (C library) | 0.14.0 | Must match liboqs-python |
-| **liboqs-python** | 0.14.1 | PyPI package |
+| **liboqs** (C library) | 0.15.0 | liboqs-python 0.14.1 emits a cosmetic `UserWarning` against 0.15.x — documented and accepted upstream |
+| **liboqs-python** | 0.14.1 | PyPI package — latest available; no 0.15.x binding shipped yet |
 | **pytest-asyncio** | latest | Required for async behavioral tests |
 | **Python** | 3.12 | CI-tested |
 
