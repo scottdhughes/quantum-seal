@@ -3,9 +3,8 @@
     "pqc": {
       "type": "stdio",
       "command": "bash",
-      "args": ["-c", "\"${PQC_MCP_PATH:-$HOME/post-quantum-mcp}/run.sh\""],
+      "args": ["-c", "\"${CLAUDE_PLUGIN_ROOT}/scripts/launch-engine.sh\""],
       "env": {
-        "PQC_MCP_PATH": "",
         "PQC_REQUIRE_KEY_HANDLES": "1"
       }
     }

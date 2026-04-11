@@ -1,5 +1,6 @@
 """Tests for plugin.json validity and file reference integrity."""
 
+import os
 import pathlib
 import re
 
@@ -45,3 +46,28 @@ def test_mcp_json_has_pqc_server(mcp_json):
     server = mcp_json["mcpServers"]["pqc"]
     assert server["type"] == "stdio"
     assert "command" in server
+
+
+def test_mcp_json_uses_launch_engine_script(mcp_json):
+    # The pqc server must invoke the preflight launcher, not run.sh directly,
+    # so engine path/version drift is caught before the engine starts.
+    args = mcp_json["mcpServers"]["pqc"].get("args", [])
+    joined = " ".join(args)
+    assert "scripts/launch-engine.sh" in joined, (
+        "pqc MCP server must invoke scripts/launch-engine.sh "
+        "(see CONTRIBUTING.md → Runtime: post-quantum-mcp engine)"
+    )
+
+
+def test_engine_pin_file_exists_and_valid(repo_root):
+    pin_file = repo_root / ".engine-pin"
+    assert pin_file.exists(), ".engine-pin missing — single source of truth for engine version"
+    pin = pin_file.read_text().strip()
+    assert pin, ".engine-pin is empty"
+    assert re.match(r"^v\d+\.\d+\.\d+", pin), f".engine-pin has unexpected format: {pin!r}"
+
+
+def test_launch_engine_script_exists_and_executable(repo_root):
+    script = repo_root / "scripts" / "launch-engine.sh"
+    assert script.exists(), "scripts/launch-engine.sh missing"
+    assert os.access(script, os.X_OK), "scripts/launch-engine.sh is not executable"

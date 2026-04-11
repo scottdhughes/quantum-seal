@@ -9,7 +9,8 @@ on:
 env:
   LIBOQS_VERSION: "0.14.0"
   LIBOQS_PYTHON_VERSION: "0.14.1"
-  ENGINE_REF: "v0.9.0"
+  # ENGINE_REF is read from .engine-pin (single source of truth, also
+  # consumed by scripts/launch-engine.sh) and exported per-job below.
 
 jobs:
   lint:
@@ -63,6 +64,9 @@ jobs:
           ninja -C /tmp/liboqs-build
           ninja -C /tmp/liboqs-build install
           sudo ldconfig
+
+      - name: Read engine pin from .engine-pin
+        run: echo "ENGINE_REF=$(cat .engine-pin)" >> "$GITHUB_ENV"
 
       - name: Install post-quantum-mcp engine
         run: pip install "git+https://github.com/scottdhughes/post-quantum-mcp.git@${ENGINE_REF}"
