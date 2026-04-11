@@ -10,13 +10,41 @@ Quantum Seal is a Claude Code plugin. All cryptographic operations are handled b
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| **post-quantum-mcp** | v0.9.0 | Engine tag pinned in CI |
+| **post-quantum-mcp** | see [`.engine-pin`](.engine-pin) | Single source of truth — read by CI and `scripts/launch-engine.sh`. Update this file to bump the engine. |
 | **liboqs** (C library) | 0.14.0 | Must match liboqs-python |
 | **liboqs-python** | 0.14.1 | PyPI package |
 | **pytest-asyncio** | latest | Required for async behavioral tests |
 | **Python** | 3.12 | CI-tested |
 
+## Runtime: post-quantum-mcp engine
+
+When Claude Code starts the `pqc` MCP server, it runs `scripts/launch-engine.sh`, which:
+
+1. Resolves the engine path: `$PQC_MCP_PATH` if set, else `$HOME/post-quantum-mcp`.
+2. Checks the path exists and `run.sh` is present and executable.
+3. Compares the engine's `git describe --tags` against [`.engine-pin`](.engine-pin).
+4. **Fatal** if any of the above fail. Errors are written to stderr and surfaced in Claude Code's MCP debug logs (`claude --debug`).
+5. exec's `run.sh` so the engine becomes the live MCP child (no extra layer in the pipe).
+
+If you're doing engine development and your local checkout is intentionally ahead of the pin, set `ALLOW_ENGINE_DRIFT=1` in the env before launching Claude Code. The launcher will still print the drift warning to stderr but won't block startup.
+
+To bump the engine version: edit `.engine-pin`, then `git -C $HOME/post-quantum-mcp checkout <new-tag>`. CI reads the same file at `Read engine pin from .engine-pin` step.
+
 ## Development
+
+### Quick start
+
+One command runs lint, all tests, and prints whether the crypto path was actually exercised:
+
+```bash
+./scripts/verify.sh
+```
+
+On first run, the script auto-creates `./.venv/` (already gitignored) seeded from `python3` and installs `pytest`, `pytest-asyncio`, and `ruff` into it. If you have a venv already active (`$VIRTUAL_ENV` set), it uses that instead. To seed from a specific interpreter: `PYTHON=/path/to/python3.12 ./scripts/verify.sh`.
+
+It then runs CI-equivalent lint and structural checks locally, plus behavioral tests when `liboqs-python` and `cryptography` are both importable. It does **not** build liboqs from source — see "Behavioral integration tests" below for the full setup CI uses. **Exits non-zero** if either dependency is absent (behavioral tests would skip) so degraded coverage cannot masquerade as a clean run. Override with `ALLOW_DEGRADED=1 ./scripts/verify.sh` for pure-markdown changes where you accept structural-only confidence.
+
+Exit codes: `0` clean, `1` lint or test failure, `2` dependency install failure, `3` degraded coverage (no liboqs).
 
 ### Prerequisites
 

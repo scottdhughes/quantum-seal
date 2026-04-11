@@ -3,9 +3,8 @@
     "pqc": {
       "type": "stdio",
       "command": "bash",
-      "args": ["-c", "\"${PQC_MCP_PATH:-$HOME/post-quantum-mcp}/run.sh\""],
+      "args": ["-c", "if [ -n \"${PQC_LAUNCHER:-}\" ] && [ -x \"$PQC_LAUNCHER\" ]; then exec \"$PQC_LAUNCHER\"; fi; for d in \"$PWD\" \"$HOME/quantum-seal\"; do if [ -x \"$d/scripts/launch-engine.sh\" ]; then exec \"$d/scripts/launch-engine.sh\"; fi; done; echo \"[mcp:pqc] FATAL: scripts/launch-engine.sh not found. Tried PWD=$PWD and $HOME/quantum-seal. Set PQC_LAUNCHER=/path/to/launch-engine.sh and re-launch Claude Code.\" >&2; exit 1"],
       "env": {
-        "PQC_MCP_PATH": "",
         "PQC_REQUIRE_KEY_HANDLES": "1"
       }
     }
