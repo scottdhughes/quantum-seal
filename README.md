@@ -60,14 +60,25 @@ Alice                                    Bob
 ### Prerequisites
 
 - [Claude Code](https://claude.ai/code) (or any MCP-compatible AI agent)
-- [post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp) server installed
-- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.14.0 (must match liboqs-python 0.14.1)
+- [post-quantum-mcp](https://github.com/scottdhughes/post-quantum-mcp) checked out at `~/post-quantum-mcp` (override with the `PQC_MCP_PATH` env var). The engine's git-tag must match [`.engine-pin`](.engine-pin).
+- [liboqs](https://github.com/open-quantum-safe/liboqs) 0.14.0, vendored at `~/post-quantum-mcp/.vendor/liboqs-0.14/` or installed system-wide. Must match `liboqs-python==0.14.1`.
 
 ### Install
 
 ```bash
-git clone https://github.com/scottdhughes/quantum-seal.git
+# 1. The plugin (this repo)
+git clone https://github.com/scottdhughes/quantum-seal.git ~/quantum-seal
+
+# 2. The crypto engine, pinned to the version in .engine-pin
+git clone https://github.com/scottdhughes/post-quantum-mcp.git ~/post-quantum-mcp
+git -C ~/post-quantum-mcp checkout "$(cat ~/quantum-seal/.engine-pin)"
+
+# 3. Build liboqs — see post-quantum-mcp's README for the full setup
 ```
+
+When Claude Code starts the `pqc` MCP server, [`scripts/launch-engine.sh`](scripts/launch-engine.sh) validates the engine path, `run.sh` presence, and engine version against [`.engine-pin`](.engine-pin) before exec'ing the engine. If anything is wrong you'll see `[launch-engine] FATAL: ...` (or `ENGINE DRIFT: ...`) in `claude --debug`, with actionable next steps. To bypass drift detection during engine development, set `ALLOW_ENGINE_DRIFT=1`.
+
+For local development workflow (lint, structural tests, behavioral tests, auto-venv), see the **Quick start** section in [CONTRIBUTING.md](CONTRIBUTING.md) — `./scripts/verify.sh` is the canonical "is my dev environment healthy" command.
 
 ### Use
 
