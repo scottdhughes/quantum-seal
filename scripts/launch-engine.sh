@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Preflight launcher for the post-quantum-mcp engine.
 #
+# Invoked from .mcp.json via:
+#   bash -c "${CLAUDE_PROJECT_DIR}/scripts/launch-engine.sh"
+#
+# CLAUDE_PROJECT_DIR is set by Claude Code for project-level MCP servers
+# (project .mcp.json files). NOT the same as CLAUDE_PLUGIN_ROOT, which is
+# only set for installed plugins from a marketplace — using PLUGIN_ROOT
+# in a project .mcp.json silently expands to empty and breaks the path.
+#
 # Validates that the engine checkout exists, run.sh is present and
 # executable, and the engine version matches the pin in .engine-pin.
 # Then exec's run.sh so the engine becomes the live MCP child process

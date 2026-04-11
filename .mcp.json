@@ -3,7 +3,7 @@
     "pqc": {
       "type": "stdio",
       "command": "bash",
-      "args": ["-c", "\"${CLAUDE_PLUGIN_ROOT}/scripts/launch-engine.sh\""],
+      "args": ["-c", "\"${CLAUDE_PROJECT_DIR}/scripts/launch-engine.sh\""],
       "env": {
         "PQC_REQUIRE_KEY_HANDLES": "1"
       }
