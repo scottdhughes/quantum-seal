@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-04-12
+
+### Added
+- **`scripts/verify.sh`** — local verification entry point with auto-venv
+  bootstrap, Python version gate (3.10+), PEP 668 handling, lint + structural
+  tests + degraded-coverage banner. Exit codes: 0 clean, 1 lint/test failure,
+  2 prerequisite failure, 3 degraded coverage. `ALLOW_DEGRADED=1` override.
+- **`scripts/launch-engine.sh`** — MCP engine preflight launcher. Validates
+  engine path, `run.sh` presence, and version against `.engine-pin`. Drift is
+  fatal unless `ALLOW_ENGINE_DRIFT=1`. Errors go to stderr for Claude Code's
+  MCP debug logs.
+- **`.engine-pin`** — single source of truth for post-quantum-mcp engine
+  version. Read by `launch-engine.sh`, CI's behavioral-integration job, and
+  the compatibility matrix in CONTRIBUTING.md. Currently `v0.9.2`.
+- **Agent policy tests** (5 tests replacing the narrow `test_agent_has_no_bash`):
+  tool-surface allowlist, forbidden-tool denylist, security-rules presence,
+  content-safety-rules presence, numbered-rule-count floor (≥13).
+
+### Changed
+- **Engine pin:** `v0.9.1` → `v0.9.2` (liboqs 0.14 → 0.15.0 alignment).
+- **`.mcp.json`:** replaced `${CLAUDE_PLUGIN_ROOT}` with `$PWD`/`$HOME` bash
+  fallback chain. Removed empty-string `PQC_MCP_PATH` env bug.
+- **CI:** `LIBOQS_VERSION` 0.14.0 → 0.15.0. `ENGINE_REF` now read from
+  `.engine-pin`.
+- **CONTRIBUTING.md:** added Quick Start + Runtime sections, behavioral
+  install command now reads from `.engine-pin`.
+- **README.md:** Quick Start documents real 3-step install + launcher behavior.
+
+### Fixed
+- `.gitignore` covers `.hypothesis/`, `.pytest_cache/`, `.ruff_cache/`.
+
 ## [0.4.0] - 2026-04-08
 
 ### Changed

@@ -63,7 +63,7 @@ Validates plugin structure, skill frontmatter, and cross-reference consistency.
 **2. Behavioral integration tests (requires liboqs + engine):**
 ```bash
 pip install liboqs-python==0.14.1 hypothesis pytest-asyncio
-pip install git+https://github.com/scottdhughes/post-quantum-mcp.git@v0.9.0
+pip install "git+https://github.com/scottdhughes/post-quantum-mcp.git@$(cat .engine-pin)"
 LD_LIBRARY_PATH=/path/to/liboqs/lib python -m pytest tests/test_behavioral_mcp.py -v
 ```
 Exercises full crypto flows: keygen → seal → verify → open, replay cache, key-handle policy.
